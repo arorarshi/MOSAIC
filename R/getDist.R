@@ -139,10 +139,15 @@ getDist<-function(datasets,out,cv=FALSE,train.snames=NULL,type=NULL){
   if (length(unique(out))==1)
     stop("Need more than one category in outcome")
 
+  if(anyNA(out)){
+    out<-as.character(na.omit(out))
+    message("Missing values in out will be removed")
+  }
+
   #convert everything to numeric
   dat<-lapply(datasets, function(x) as.data.frame(plyr::aaply(x,1,as.numeric,.drop=FALSE)) )
   rnames<-unlist(lapply(datasets, function(x) rownames(x)))
-  rnames<-unique(rnames)
+  rnames<-intersect(unique(rnames), names(out))
 
   if(is.null(rnames))
     stop("rowanmes=NULL, add sample names to matrix of datasets list object")
