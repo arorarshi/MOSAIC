@@ -15,19 +15,7 @@ getWeights<-function(xx, out,cv=FALSE, train.snames=NULL){
     xx = xx[inter,,drop=FALSE]
     out = out[inter]
 
-    #calculate survobj upfront
-    ll<-list()
-    for(i in 1:ncol(xx)){
-      if(length(unique(out))==2){
-        ll[[i]]<-summary(glm(out ~ xx[,i], family="binomial"))$coefficients
-      }
-    }
-    if(length(unique(out)) == 2){
-      lodds<-unlist(lapply(ll, function(x) x[2,1]))}
-
-    if(length(unique(out)) > 2){
-
-      lodds<-get.probRwts(xx, out)}
+    lodds<-get.probRwts(xx, out)
 
     xx.wt <- t(t(xx) * sqrt(abs(lodds)))
     return(xx.wt)
@@ -39,18 +27,8 @@ getWeights<-function(xx, out,cv=FALSE, train.snames=NULL){
     xx.train = xx[inter,,drop=FALSE]
     out = out[inter]
 
-    ll<-list()
-    for(i in 1:ncol(xx)){
-      if(length(unique(out)) == 2){
-        ll[[i]]<-summary(glm(out ~ xx.train[,i], family="binomial"))$coefficients
-      }
-    }
 
-    if(length(unique(out)) == 2){
-      lodds<-unlist(lapply(ll, function(x) x[2,1]))}
-
-    if(length(unique(out)) > 2){
-      lodds<-get.probRwts(xx.train, out)}
+    lodds<-get.probRwts(xx.train, out)
 
     #on features which are columns, same in all and train
     xx.train.wt <- t(t(xx.train) * sqrt(abs(lodds)))
